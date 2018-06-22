@@ -1,0 +1,12 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+# Load index page
+GET        /                  controllers.Assets.at(path="/public", file="index.html")
+
+# An example route
+GET        /v1/life           controllers.LifeController.lifeSocket
+
+# Map static resources from the /public folder to the file resource path
+GET        /*file             controllers.Assets.at(path="/public", file)
