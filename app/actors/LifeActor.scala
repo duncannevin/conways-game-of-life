@@ -35,10 +35,10 @@ class LifeActor @Inject()(out: ActorRef) extends Actor {
       grid.createTable(dimensions)
       out ! GridOut(Some(grid.table), "new-grid")
     case Start() =>
-      grid.processGrid
+      grid.processGrid()
       out ! GridOut(Some(grid.table), "starting")
     case Continue() =>
-      grid.processGrid
+      grid.processGrid()
       out ! GridOut(Some(grid.table), "continuing")
     case Stop() =>
       out ! GridOut(Some(grid.table), "stopping")
@@ -46,7 +46,7 @@ class LifeActor @Inject()(out: ActorRef) extends Actor {
       grid.updateGrid(x, y, grid)
       out ! GridOut(Some(grid.table), "update-grid")
     case Reset() =>
-      grid.createTable((grid.table.length, grid.table.head.length))
+      grid.createTable((grid.tableSize._1, grid.tableSize._2))
       out ! GridOut(Some(grid.table), "reset")
   }
 }

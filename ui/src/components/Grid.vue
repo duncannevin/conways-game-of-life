@@ -1,10 +1,13 @@
 <template>
 <div class="grid">
   <div class="status">status: {{ life.state }}</div>
+  <div class="speed">speed: {{ life.speed }}</div>
    <div class="controls">
      <button @click="life.start">Start</button>
      <button @click="life.stop">Stop</button>
      <button @click="life.reset">Reset</button>
+     <button @click="life.adjustSpeed('slower')">Slower</button>
+     <button @click="life.adjustSpeed('faster')">Faster</button>
    </div>
     <tbody>
       <tr class="row" v-for="(row, rInd) in grid" :key="`row-${rInd}`">

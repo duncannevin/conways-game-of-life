@@ -16,6 +16,8 @@ class Life extends Ws {
     this._controlFlow = this._controlFlow.bind(this)
     this.reset = this.reset.bind(this)
 
+    this.speed = 500
+
     this._openSocket(this._getGrid)
 
     this._onMessage(res => {
@@ -41,6 +43,12 @@ class Life extends Ws {
     this._send({action: 'reset'})
   }
 
+  adjustSpeed (direction) {
+    if (direction === 'slower' || this.speed > 0) {
+      this.speed += direction === 'faster' ? -100 : 100
+    }
+  }
+
   update (x, y) {
     this._send({action: 'update', update: {x: x, y: y}})
   }
@@ -50,7 +58,7 @@ class Life extends Ws {
       setTimeout(() => {
         this.continue()
         this._controlFlow()
-      }, 500)
+      }, this.speed)
     }
   }
 

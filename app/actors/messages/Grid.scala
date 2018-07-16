@@ -1,28 +1,30 @@
 package actors.messages
 
 class Grid {
-  var table: List[List[Int]] = List.empty[List[Int]]
+  type Table = List[List[Int]]
+
+  var tableSize: (Int, Int) = (0, 0)
+  var table: Table = List.empty[List[Int]]
 
   def createRow(len: Int): List[Int] =
     List.fill(len)(0)
 
-  def createTable(dimensions: (Int, Int)): Unit =
+  def createTable(dimensions: (Int, Int)): Unit = {
+    tableSize = dimensions
     this.table = List.fill(dimensions._1)(createRow(dimensions._2))
-
-  // Not being used currently
-  def rearangeTable(pos: (Int, Int)) = pos match {
-    // add a row to top
-    case (rowPos, _) if rowPos - 1 < 0 =>
-      table = createRow(table.head.length) :: table
-    // add a row to bottom
-    case (rowPos, _) if rowPos + 1 > table.length =>
-      table = table :+ createRow(table.head.length)
-    // add a new cell to end of each row
-    case (_, cellPos) if cellPos - 1 < 0 =>
-      table = table.map(row => row :+ 0)
-    // add a new cell to the beginning of each row
-    case (_, cellPos) if cellPos + 1 > table.length =>
-      table = table.map(row => 0 :: row)
+  }
+  def rearangeGrid(table: Table): Table = {
+    if (table.head.contains(1)) { // check for live cells top row
+      createRow(table.head.length) :: table
+    } else if (table.map(_.last).contains(1)) { // check for live cells in last column
+      table.map(row => row :+ 0)
+    } else if (table.last.contains(1)) { // check of live cells in bottom row
+      table :+ createRow(table.last.length)
+    } else if (table.map(_.head).contains(1)) { // check for live cells in first column
+      table.map(row => 0 :: row)
+    } else {
+      table
+    }
   }
 
   def neighborsSum(pos: (Int, Int)): Int = {
@@ -67,7 +69,7 @@ class Grid {
     List(topLeft, top, topRight, right, bottomRight, bottom, bottomLeft, left).sum
   }
 
-  def liveOrDie(cellValue: Int, cellPosition: (Int, Int)) = cellValue match {
+  def liveOrDie(cellValue: Int, cellPosition: (Int, Int)): Int = cellValue match {
 
     case cell if cell == 1 => // live cell
       cellPosition match {
@@ -86,11 +88,11 @@ class Grid {
       }
   }
 
-  def processGrid = this.table = this.table.zipWithIndex.map { row =>
+  def processGrid(): Unit = this.table = this.rearangeGrid(this.table.zipWithIndex.map { row =>
     row._1.zipWithIndex.map { cell =>
       liveOrDie(cell._1, (row._2, cell._2))
     }
-  }
+  })
 
   def updateGrid(x: Int, y: Int, grid: Grid): Unit = {
     this.table = grid.table.zipWithIndex.map {
